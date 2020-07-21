@@ -1,5 +1,6 @@
 # Simple but usable password generator
 
+![ppg](https://user-images.githubusercontent.com/20663776/88048724-199dd480-cb69-11ea-8fab-9c65f371ff56.png)
 
 Main features:  
 * By using one main password, generates different constant passwords for different services.  
