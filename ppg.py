@@ -30,7 +30,7 @@ COLORS = {
     'green': '\033[0;36m',
     'reset': '\033[0m'
 }
-VERSION = '20.11.5'
+VERSION = '20.11.05'
 
 
 def maybe_wait(seconds):

@@ -94,6 +94,6 @@ You must have `python3` installed. Also if you want to use `clipboard` feature, 
 ```
 or
 ```sh
-~ $ curl -sSf https://raw.githubusercontent.com/pouriya/ppg/master/ppg.py > ppg && chmod a+x ppg && sudo cp ppg /usr/local/sbin/ppg && ppg --version
-20.11.5
+~ $ curl -sSf curl -sSf https://raw.githubusercontent.com/pouriya/ppg/20.11.05/ppg.py > ppg && chmod a+x ppg && sudo cp ppg /usr/local/sbin/ppg && ppg --version
+20.11.05
 ```
