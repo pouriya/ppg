@@ -18,7 +18,6 @@ FORMATTERS = {
     'b10': lambda string: ''.join([str(char) for char in string]).encode(),
     'b2': lambda string: ''.join([bin(char)[2:] for char in string]).encode()
 }
-
 DEFAULT_FORMATTER = 'b85'
 DEFAULT_LENGTH = 32
 DEFAULT_CONFIG_FILE = '/etc/services.ppg'
@@ -31,6 +30,7 @@ COLORS = {
     'green': '\033[0;36m',
     'reset': '\033[0m'
 }
+VERSION = '20.11.5'
 
 
 def maybe_wait(seconds):
@@ -218,7 +218,17 @@ if __name__ == '__main__':
         help='will read a file that contains our service names. each line in form of NAME[ FORMATTER[ LENGTH]]',
         default=DEFAULT_CONFIG_FILE
     )
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='store_true',
+        dest='version',
+        help='prints version number and exits'
+    )
     args = parser.parse_args()
+    if args.version:
+        print(VERSION)
+        exit(0)
     if args.no_color:
         COLORS = {k: '' for k, v in COLORS.items()}
     if args.length < 1:
@@ -257,12 +267,20 @@ if __name__ == '__main__':
                 if log:
                     print('{yellow}Password has been copied to clipboard{reset}'.format(**COLORS))
 
-    main_password = getpass('{white}Enter main password: {reset}'.format(**COLORS))
+    try:
+        main_password = getpass('{white}Enter main password: {reset}'.format(**COLORS))
+    except KeyboardInterrupt:
+        print()
+        exit(1)
     if not main_password:
         print('{red}You MUST enter something as main password{reset}'.format(**COLORS))
         exit(1)
     if args.one_shot:
-        service_name = input('{white}Enter service name: {reset}'.format(**COLORS))
+        try:
+            service_name = input('{white}Enter service name: {reset}'.format(**COLORS))
+        except KeyboardInterrupt:
+            print()
+            exit(1)
         if not service_name:
             print('{red}You MUST enter something for service name{reset}'.format(**COLORS))
             exit(1)
