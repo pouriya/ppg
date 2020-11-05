@@ -71,6 +71,19 @@ def check_pyperclip():
     return True
 
 
+def check_androidhelper():
+    try:
+        from androidhelper import Android
+    except ImportError:
+        return 'Could not import/found "androidhelper.Android" library.'
+    try:
+        # check lib functionality:
+        Android.getClipboard().result
+    except Exception as reason:
+        return '"androidhelper" library is not working: {}'.format(str(reason))
+    return True
+
+
 def parse_statement(text):
     parts = text.split(' ')
     password_format, password_length = DEFAULT_FORMATTER, str(DEFAULT_LENGTH)
@@ -251,9 +264,28 @@ if __name__ == '__main__':
     if args.output == 'clipboard':
         pyperclip_check = check_pyperclip()
         if pyperclip_check is not True:
-            print('{red}{}{reset}'.format(pyperclip_check, **COLORS))
-            print('{red}Your password will be printed to STDOUT{reset}'.format(**COLORS))
-            args.output = 'stdout'
+            androidhelper_check = check_androidhelper()
+            if androidhelper_check is not True:
+                print('{red}{}{reset}'.format(pyperclip_check, **COLORS))
+                print('{red}{}{reset}'.format(androidhelper_check, **COLORS))
+                print('{red}Your password will be printed to STDOUT{reset}'.format(**COLORS))
+                args.output = 'stdout'
+            if args.service_file == DEFAULT_CONFIG_FILE:
+                from pathlib import Path
+                from os.path import join
+                args.service_file = join(Path.home(), args.service_file)
+
+            # override above implementations:
+            def load_last_buffer():
+                from androidhelper import Android
+                return Android.getClipboard().result
+
+
+            def write_buffer(text, log=True):
+                from androidhelper import Android
+                Android.setClipboard(text)
+                if log:
+                    print('{yellow}Password has been copied to clipboard{reset}'.format(**COLORS))
         else:
             # override above implementations:
             def load_last_buffer():
