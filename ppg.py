@@ -7,7 +7,6 @@ from time import sleep
 from os import system
 from os.path import isfile
 
-
 FORMATTERS = {
     'b85': lambda string: b85encode(string),
     'a85': lambda string: a85encode(string),
@@ -24,7 +23,6 @@ DEFAULT_FORMATTER = 'b85'
 DEFAULT_LENGTH = 32
 DEFAULT_CONFIG_FILE = '/etc/services.ppg'
 CLEAR_SCREEN_COMMAND = 'clear'
-
 COLORS = {
     'red': '\033[1;31m',
     'yellow': '\033[1;33m',
@@ -50,6 +48,7 @@ def maybe_wait(seconds):
 def maybe_resize(string, length, encoder):
     if len(string) >= length:
         return string[:length]
+    # All of our formatters enlarge strings:
     return maybe_resize(FORMATTERS[encoder](string), length, encoder)
 
 
@@ -101,7 +100,9 @@ def load_services(filename):
     try:
         fd = open(filename)
     except Exception as reason:
-        print('{red}could not open file {reset}{white}{!r}{reset}: {yellow}{}{reset}'.format(filename, reason, **COLORS))
+        print(
+            '{red}could not open file {reset}{white}{!r}{reset}: {yellow}{}{reset}'.format(filename, reason, **COLORS)
+        )
         return False
     line_number = 0
     for line in fd:
@@ -154,6 +155,7 @@ def maybe_print_service_names(services):
 def add_service(name, password, services):
     result = []
     for x, y in services:
+        # if this name already exists, It should go to the end of list:
         if x == name:
             continue
         result.append((x, y))
@@ -163,6 +165,7 @@ def add_service(name, password, services):
 
 if __name__ == '__main__':
     import argparse
+
     parser = argparse.ArgumentParser(description='A Simple but Usable password manager.')
     parser.add_argument(
         '-f',
@@ -225,12 +228,15 @@ if __name__ == '__main__':
     if args.sleep is None:
         args.sleep = 0
 
+
     def load_last_buffer():
         return ''
+
 
     def write_buffer(text, log=True):
         if log:
             print('{yellow}{}{reset}'.format(text, **COLORS))
+
 
     if args.output == 'clipboard':
         pyperclip_check = check_pyperclip()
@@ -243,6 +249,7 @@ if __name__ == '__main__':
             def load_last_buffer():
                 import pyperclip
                 return pyperclip.paste()
+
 
             def write_buffer(text, log=True):
                 import pyperclip
@@ -283,7 +290,7 @@ if __name__ == '__main__':
             if service_name_or_index.isdigit():
                 index = int(service_name_or_index)
                 try:
-                    (name, password) = services[index-1]
+                    (name, password) = services[index - 1]
                 except IndexError:
                     print('{red}invalid index {reset}{yellow}{}{reset}\n'.format(index, **COLORS))
                     continue
@@ -301,7 +308,7 @@ if __name__ == '__main__':
             write_buffer(password)
             if maybe_wait(args.sleep):
                 write_buffer(buffer, False)
-        except KeyboardInterrupt:
+        except KeyboardInterrupt:  # Ctrl-C
             print()
             exit(1)
         system(CLEAR_SCREEN_COMMAND)
