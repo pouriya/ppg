@@ -92,3 +92,8 @@ You must have `python3` installed. Also if you want to use `clipboard` feature, 
 ```sh
 ~/path/to/cloned/ppg $ chmod a+x ppg.py && sudo ln -sf $PWD/ppg.py /usr/local/sbin/ppg
 ```
+or
+```sh
+~ $ curl -sSf https://raw.githubusercontent.com/pouriya/ppg/master/ppg.py > ppg && chmod a+x ppg && sudo cp ppg /usr/local/sbin/ppg && ppg --version
+20.11.5
+```
