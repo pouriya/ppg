@@ -78,7 +78,7 @@ def check_androidhelper():
         return 'Could not import/found "androidhelper.Android" library.'
     try:
         # check lib functionality:
-        Android.getClipboard().result
+        Android().getClipboard().result
     except Exception as reason:
         return '"androidhelper" library is not working: {}'.format(str(reason))
     return True
@@ -270,22 +270,22 @@ if __name__ == '__main__':
                 print('{red}{}{reset}'.format(androidhelper_check, **COLORS))
                 print('{red}Your password will be printed to STDOUT{reset}'.format(**COLORS))
                 args.output = 'stdout'
-            if args.service_file == DEFAULT_CONFIG_FILE:
-                from pathlib import Path
-                from os.path import join
-                args.service_file = join(Path.home(), args.service_file)
+            else:
+                if args.service_file == DEFAULT_CONFIG_FILE:
+                    from os.path import join
+                    args.service_file = join('/', 'sdcard', args.service_file)
 
-            # override above implementations:
-            def load_last_buffer():
-                from androidhelper import Android
-                return Android.getClipboard().result
+                # override above implementations:
+                def load_last_buffer():
+                    from androidhelper import Android
+                    return Android().getClipboard().result
 
 
-            def write_buffer(text, log=True):
-                from androidhelper import Android
-                Android.setClipboard(text)
-                if log:
-                    print('{yellow}Password has been copied to clipboard{reset}'.format(**COLORS))
+                def write_buffer(text, log=True):
+                    from androidhelper import Android
+                    Android().setClipboard(text)
+                    if log:
+                        print('{yellow}Password has been copied to clipboard{reset}'.format(**COLORS))
         else:
             # override above implementations:
             def load_last_buffer():
