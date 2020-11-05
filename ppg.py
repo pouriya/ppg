@@ -35,15 +35,7 @@ COLORS = {
 }
 
 
-def maybe_raise(exception):
-    # It's our custom exception, we can print it and skip:
-    if str(exception)[0] == '$':
-        print('{red}{}{reset}'.format(str(exception)[1:], **COLORS))
-        return
-    raise exception
-
-
-def wait(seconds):
+def maybe_wait(seconds):
     if seconds < 1:
         return False
     print('{white}waiting for {}s to remove password from clipboard{reset}'.format(args.sleep, **COLORS))
@@ -103,7 +95,7 @@ def parse_statement(text):
 def load_services(filename):
     services = []
     if not isfile(filename):
-        if filename != DEFAULT_CONFIG_FILE + ';':
+        if filename != DEFAULT_CONFIG_FILE:
             print('{red}could not found config file{reset}{white}{!r}{reset}'.format(filename, **COLORS))
         return services
     try:
@@ -171,7 +163,7 @@ def add_service(name, password, services):
 
 if __name__ == '__main__':
     import argparse
-    parser = argparse.ArgumentParser(description='A simple but usable password generator.')
+    parser = argparse.ArgumentParser(description='A Simple but Usable password manager.')
     parser.add_argument(
         '-f',
         '--format',
@@ -270,17 +262,15 @@ if __name__ == '__main__':
         password = generate_password(service_name, main_password, args.format, args.length)
         buffer = load_last_buffer()
         write_buffer(password)
-        if wait(args.sleep):
+        if maybe_wait(args.sleep):
             write_buffer(buffer, False)
         exit(0)
 
     if args.sleep == 0:
         args.sleep = 5
-    services = []
-    if args.service_file is not None:
-        services = load_services(args.service_file)
-        if services is False:
-            exit(1)
+    services = load_services(args.service_file)
+    if services is False:
+        exit(1)
     services = [(x, generate_password(x, main_password, y, z)) for x, y, z in services]
     system(CLEAR_SCREEN_COMMAND)
     while True:
@@ -292,9 +282,6 @@ if __name__ == '__main__':
                 continue
             if service_name_or_index.isdigit():
                 index = int(service_name_or_index)
-                if index < 1:
-                    print('{red}service index MUST be positive integer{reset}\n'.format(**COLORS))
-                    continue
                 try:
                     (name, password) = services[index-1]
                 except IndexError:
@@ -312,7 +299,7 @@ if __name__ == '__main__':
             print('{green}{}: {reset}'.format(name, **COLORS), end=' ', flush=True)
             buffer = load_last_buffer()
             write_buffer(password)
-            if wait(args.sleep):
+            if maybe_wait(args.sleep):
                 write_buffer(buffer, False)
         except KeyboardInterrupt:
             print()
