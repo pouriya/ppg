@@ -20,7 +20,7 @@ FORMATTERS = {
 }
 DEFAULT_FORMATTER = 'b85'
 DEFAULT_LENGTH = 32
-DEFAULT_CONFIG_FILE = '/etc/services.ppg'
+DEFAULT_CONFIG_FILE = '/etc/ppg'
 CLEAR_SCREEN_COMMAND = 'clear'
 COLORS = {
     'red': '\033[1;31m',
